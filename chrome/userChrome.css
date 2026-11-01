@@ -1,0 +1,533 @@
+/* userChrome.css - COSMIC look for firefox-frosted (horizontal + vertical tabs)
+ *
+ * Colors, radii and frosted alphas are taken from the COSMIC theme in
+ * ~/.config/cosmic/com.system76.CosmicTheme.{Dark,Light}/v2. Follows the
+ * system light/dark mode. If you change your COSMIC accent or roundness,
+ * update the --cosmic-* tokens below.
+ *
+ * Needs (set by user.js next to this folder):
+ *   toolkit.legacyUserProfileCustomizations.stylesheets = true
+ *   widget.transparent-windows                         = true
+ *   widget.wayland.background-blur.enabled             = true
+ *
+ * Previous version: userChrome.css.bak-20261026
+ */
+
+/* ---------- COSMIC tokens: dark ---------- */
+:root {
+  /* transparent_background (frosted window) */
+  --cosmic-bg:              #1B1B1B3D;
+  --cosmic-bg-solid:        #1B1B1B;
+  --cosmic-bg-divider:      #40404064;
+  --cosmic-on-bg:           #FFFFFF;
+  /* background.component (text inputs, cards) */
+  --cosmic-component:       #2E2E2E3D;
+  --cosmic-component-hover: #39393951;
+  --cosmic-component-solid: #2E2E2EF2;
+  /* primary container (popups, menus) */
+  --cosmic-primary:         #272727;
+  --cosmic-primary-glass:   #272727F2;
+  --cosmic-primary-hover:   #4A4A4A;
+  --cosmic-primary-divider: #525252;
+  /* buttons */
+  --cosmic-btn:             #9E9E9E40;
+  --cosmic-btn-hover:       #63636333;
+  --cosmic-btn-pressed:     #16161680;
+  --cosmic-icon:            #BEBEBE;
+  /* accent */
+  --cosmic-accent:          #862727;
+  --cosmic-accent-text:     #FF948D;
+  --cosmic-on-accent:       #FFFFFF;
+  --cosmic-divider:         #FFFFFF33;
+  /* shape */
+  --cosmic-radius-xs:       2px;
+  --cosmic-radius-s:        8px;
+  --cosmic-radius-m:        8px;
+  --cosmic-space-xxs:       4px;
+  --cosmic-space-xs:        8px;
+  --cosmic-active-hint:     3px;
+}
+
+/* ---------- COSMIC tokens: light ---------- */
+@media (prefers-color-scheme: light) {
+  :root {
+    --cosmic-bg:              #D7D7D76B;
+    --cosmic-bg-solid:        #D7D7D7;
+    --cosmic-bg-divider:      #8A8A8A89;
+    --cosmic-on-bg:           #121212;
+    --cosmic-component:       #F5F5F56B;
+    --cosmic-component-hover: #DBDBDB7A;
+    --cosmic-component-solid: #F5F5F5F2;
+    --cosmic-primary:         #EBEBEB;
+    --cosmic-primary-glass:   #EBEBEBF2;
+    --cosmic-primary-hover:   #DEDEDE;
+    --cosmic-primary-divider: #BCBCBC;
+    --cosmic-btn:             #2E2E2E40;
+    --cosmic-btn-hover:       #2B2B2B33;
+    --cosmic-btn-pressed:     #2B2B2B66;
+    --cosmic-icon:            #272727;
+    --cosmic-accent:          #00525A;
+    --cosmic-accent-text:     #00525A;
+    --cosmic-on-accent:       #FFFFFF;
+    --cosmic-divider:         #00000033;
+  }
+}
+
+/* ---------- Map onto Firefox 158's theme variables ---------- */
+:root {
+  --toolbox-background-color:              var(--cosmic-bg) !important;
+  --toolbox-background-color-inactive:     var(--cosmic-bg) !important;
+  --toolbox-text-color:                    var(--cosmic-on-bg) !important;
+  --toolbox-text-color-inactive:           var(--cosmic-on-bg) !important;
+  --toolbar-background-color:              transparent !important;
+  --toolbar-text-color:                    var(--cosmic-on-bg) !important;
+  --chrome-content-separator-color:        transparent !important;
+  --tabs-navbar-separator-color:           transparent !important;
+
+  --toolbarbutton-border-radius:           var(--cosmic-radius-s) !important;
+  --toolbarbutton-background-color-hover:  var(--cosmic-btn-hover) !important;
+  --toolbarbutton-background-color-active: var(--cosmic-btn-pressed) !important;
+  --toolbarbutton-icon-fill:               var(--cosmic-icon) !important;
+
+
+  --focus-outline-color:                   var(--cosmic-accent) !important;
+  --color-accent-primary:                  var(--cosmic-accent) !important;
+  --color-accent-primary-hover:            var(--cosmic-accent) !important;
+  --color-accent-primary-active:           var(--cosmic-accent) !important;
+  --button-text-color-primary:             var(--cosmic-on-accent) !important;
+  --button-border-radius:                  var(--cosmic-radius-s) !important;
+
+  --tab-border-radius:                     var(--cosmic-radius-s) !important;
+  --tab-background-color-selected:         var(--cosmic-btn) !important;
+  --tab-background-color-hover:            var(--cosmic-btn-hover) !important;
+  --tab-text-color-selected:               var(--cosmic-on-bg) !important;
+  --tab-box-shadow-selected:               none !important;
+  --tab-border-color-selected:             transparent !important;
+
+  --sidebar-background-color:              transparent !important;
+  --sidebar-text-color:                    var(--cosmic-on-bg) !important;
+  --sidebar-border-color:                  transparent !important;
+  --sidebar-divider-color:                 transparent !important;
+}
+
+/* Firefox defines the URL bar variables on the URL bar itself, so they
+   have to be overridden there rather than on :root. */
+#urlbar,
+.urlbar,
+#searchbar {
+  --urlbar-background-color:               var(--cosmic-component) !important;
+  --urlbar-background-color-focus:         var(--cosmic-component-solid) !important;
+  --toolbar-field-background-color:        var(--cosmic-component) !important;
+  --toolbar-field-background-color-focus:  var(--cosmic-component-solid) !important;
+  --toolbar-field-text-color:              var(--cosmic-on-bg) !important;
+  --toolbar-field-text-color-focus:        var(--cosmic-on-bg) !important;
+  --toolbar-field-border-color:            transparent !important;
+  --toolbar-field-border-color-focus:      var(--cosmic-accent) !important;
+  --urlbar-border-radius:                  var(--cosmic-radius-s) !important;
+  --urlbar-box-background-color:           var(--cosmic-btn-hover) !important;
+  --urlbar-box-background-color-hover:     var(--cosmic-btn) !important;
+  --urlbar-box-background-color-active:    var(--cosmic-btn-pressed) !important;
+  --urlbar-box-background-color-focus:     var(--cosmic-btn-hover) !important;
+  --urlbarview-border-radius:              var(--cosmic-radius-s) !important;
+  --urlbarview-background-color-hover:     var(--cosmic-primary-hover) !important;
+  --urlbarview-background-color-selected:  var(--cosmic-primary-hover) !important;
+  --urlbarview-text-color-selected:        var(--cosmic-on-bg) !important;
+}
+
+/* Buttons inside the URL bar (search engine switcher etc.) are moz-buttons
+   with solid default colors; keep them translucent like COSMIC buttons. */
+#urlbar moz-button,
+.searchmode-switcher {
+  --button-background-color: var(--cosmic-btn-hover) !important;
+  --button-background-color-hover: var(--cosmic-btn-hover) !important;
+  --button-background-color-active: var(--cosmic-btn-pressed) !important;
+  --button-background-color-selected: var(--cosmic-btn) !important;
+  --button-background-color-ghost: transparent !important;
+  --button-background-color-ghost-hover: var(--cosmic-btn-hover) !important;
+  --button-background-color-ghost-active: var(--cosmic-btn-pressed) !important;
+  --button-background-color-ghost-selected: var(--cosmic-btn) !important;
+  --button-background-color-toolbar: transparent !important;
+  --button-background-color-toolbar-hover: var(--cosmic-btn-hover) !important;
+  --button-background-color-toolbar-active: var(--cosmic-btn-pressed) !important;
+  --button-background-color-toolbar-selected: var(--cosmic-btn) !important;
+  --button-background-color-menu: transparent !important;
+  --button-background-color-menu-hover: var(--cosmic-btn-hover) !important;
+  --button-background-color-menu-active: var(--cosmic-btn-pressed) !important;
+  --button-background-color-menu-selected: var(--cosmic-btn) !important;
+  --button-background-color-muted: var(--cosmic-btn-hover) !important;
+  --button-background-color-muted-hover: var(--cosmic-btn) !important;
+  --button-background-color-muted-active: var(--cosmic-btn-pressed) !important;
+  --button-background-color-muted-selected: var(--cosmic-btn) !important;
+}
+
+/* Panels and menus stay opaque: blur behind popups is off by default.
+   Firefox sets these on the popups themselves, so override them there. */
+menupopup,
+panel {
+  --panel-background-color:                var(--cosmic-primary) !important;
+  --panel-background-color-dimmed:         var(--cosmic-btn-hover) !important;
+  --panel-background-color-dimmed-further: var(--cosmic-btn) !important;
+  --panel-text-color:                      var(--cosmic-on-bg) !important;
+  --panel-border-color:                    var(--cosmic-primary-divider) !important;
+  --panel-border-radius:                   var(--cosmic-radius-m) !important;
+  --panel-separator-color:                 var(--cosmic-divider) !important;
+  --panel-menuitem-border-radius:          var(--cosmic-radius-s) !important;
+  --menuitem-border-radius:                var(--cosmic-radius-s) !important;
+  --menuitem-hover-background-color:       var(--cosmic-primary-hover) !important;
+}
+
+/* ---------- Frosted window ---------- */
+/* Firefox paints the window background on <body> (the solid GTK headerbar
+   color); anything opaque here makes the whole window opaque and drops the blur. */
+:root,
+#main-window,
+body {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+body:-moz-window-inactive {
+  background-color: transparent !important;
+}
+
+#navigator-toolbox {
+  background: var(--cosmic-bg) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#TabsToolbar,
+#titlebar,
+#nav-bar,
+#PersonalToolbar,
+#toolbar-menubar {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* With vertical tabs the window has no toolbox above the sidebar,
+   so give the browser area the same frosted background. */
+#browser {
+  background: var(--cosmic-bg) !important;
+}
+#tabbrowser-tabpanels,
+#appcontent {
+  background: transparent !important;
+}
+
+/* ---------- Toolbar buttons: COSMIC icon buttons ---------- */
+toolbar .toolbarbutton-1 {
+  --toolbarbutton-inner-padding: var(--cosmic-space-xs) !important;
+}
+toolbar .toolbarbutton-1 > .toolbarbutton-icon,
+toolbar .toolbarbutton-1 > .toolbarbutton-badge-stack,
+toolbar .toolbarbutton-1 > .toolbarbutton-text {
+  border-radius: var(--cosmic-radius-s) !important;
+}
+
+/* ---------- URL bar: COSMIC text input ---------- */
+#urlbar-background,
+.urlbar-background,
+#searchbar {
+  border-radius: var(--cosmic-radius-s) !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+}
+#urlbar[focused] > #urlbar-background,
+#urlbar[focused] > .urlbar-background,
+#searchbar:focus-within {
+  border: 2px solid var(--cosmic-accent) !important;
+  outline: none !important;
+}
+/* Anything in the main window stays slightly translucent (alpha F2): a fully
+   opaque URL bar would change the window's opaque region on every focus and
+   make the blur flicker. */
+#urlbar[open] > #urlbar-background,
+#urlbar[open] > .urlbar-background {
+  background: var(--cosmic-primary-glass) !important;
+  border: 1px solid var(--cosmic-primary-divider) !important;
+}
+#urlbar .urlbarView-row[selected] > .urlbarView-row-inner,
+#urlbar .urlbarView-row:hover > .urlbarView-row-inner {
+  border-radius: var(--cosmic-radius-s) !important;
+}
+#urlbar .urlbarView-row[selected] > .urlbarView-row-inner {
+  background: var(--cosmic-primary-hover) !important;
+  color: var(--cosmic-on-bg) !important;
+}
+#urlbar .urlbarView-row[selected] .urlbarView-title,
+#urlbar .urlbarView-row[selected] .urlbarView-url {
+  color: inherit !important;
+}
+#identity-box > box,
+#tracking-protection-icon-container,
+#page-action-buttons > *,
+.urlbar-page-action {
+  border-radius: var(--cosmic-radius-s) !important;
+}
+
+/* ---------- Tabs: shared ---------- */
+.tabbrowser-tab .tab-background {
+  border-radius: var(--cosmic-radius-s) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+.tabbrowser-tab:hover:not([selected]) .tab-background {
+  background: var(--cosmic-btn-hover) !important;
+}
+.tabbrowser-tab[selected] .tab-background,
+.tabbrowser-tab[multiselected] .tab-background {
+  background: var(--cosmic-btn) !important;
+}
+.tabbrowser-tab[multiselected]:not([selected]) .tab-background {
+  outline: 1px solid var(--cosmic-accent) !important;
+  outline-offset: -1px !important;
+}
+.tabbrowser-tab:focus-visible .tab-background {
+  outline: 2px solid var(--cosmic-accent) !important;
+  outline-offset: -2px !important;
+}
+.tab-close-button {
+  border-radius: var(--cosmic-radius-s) !important;
+}
+.tab-close-button:hover {
+  background: var(--cosmic-btn-hover) !important;
+}
+.tab-close-button:hover:active {
+  background: var(--cosmic-btn-pressed) !important;
+}
+#tabbrowser-tabs .tab-label-container[textoverflow][labeldirection=ltr]:not([pinned]),
+#tabbrowser-tabs .tab-label-container[textoverflow]:not([labeldirection]):not([pinned]):-moz-locale-dir(ltr) {
+  mask-image: linear-gradient(to left, transparent, black 1.5em) !important;
+}
+
+/* ---------- Tabs: horizontal (COSMIC tab bar, like Files/Terminal) ---------- */
+#tabbrowser-tabs:not([orient="vertical"]) {
+  --tab-min-height: 32px !important;
+  --tab-block-margin: var(--cosmic-space-xxs) !important;
+  border-inline-start: none !important;
+  padding-inline-start: var(--cosmic-space-xxs) !important;
+}
+#tabbrowser-tabs:not([orient="vertical"]) .tabbrowser-tab {
+  padding-inline: 2px !important;
+}
+#tabbrowser-tabs:not([orient="vertical"]) .tabbrowser-tab::after,
+#tabbrowser-tabs:not([orient="vertical"]) .tabbrowser-tab::before {
+  display: none !important;
+}
+
+/* ---------- Layout: one header bar + tab bar ---------- */
+/* Like native COSMIC apps, a single header bar: the menu bar, then the whole
+   nav-bar (buttons, URL bar, extensions, hamburger menu) and the window
+   controls; the tab bar is the second row, right above the page. The menu
+   can't be moved into the nav-bar (Firefox marks it non-removable), so the
+   two toolbars share the first row of a grid instead. Active only while the
+   menu bar is switched on (right-click a toolbar > Menu Bar); web apps keep
+   it off and so keep their tabs-in-title-bar layout. */
+:root:has(#toolbar-menubar:not([autohide])) {
+  #navigator-toolbox {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+  #toolbar-menubar       { grid-area: 1 / 1; }
+  #nav-bar               { grid-area: 1 / 2; }
+  #TabsToolbar           { grid-area: 2 / 1 / 3 / -1; }
+  #PersonalToolbar       { grid-area: 3 / 1 / 4 / -1; }
+  #notifications-toolbar { grid-area: 4 / 1 / 5 / -1; }
+
+  /* Window controls at the end of the nav-bar only. */
+  #nav-bar > .titlebar-buttonbox-container {
+    display: flex !important;
+    visibility: visible !important;
+  }
+  :is(#toolbar-menubar, #TabsToolbar) > :is(.titlebar-spacer, .titlebar-buttonbox-container) {
+    display: none !important;
+  }
+
+  /* Header bar: drag the window by its empty parts. */
+  /* Stretch to the nav-bar's height and center the menu in it, so the
+     labels line up with the URL bar text. */
+  #toolbar-menubar {
+    align-self: stretch !important;
+    align-items: center !important;
+    min-height: 44px !important;
+    padding-inline: var(--cosmic-space-xs) var(--cosmic-space-xs) !important;
+    -moz-window-dragging: drag !important;
+  }
+  #toolbar-menubar > #menubar-items {
+    align-self: center !important;
+    -moz-window-dragging: no-drag;
+  }
+  #nav-bar {
+    min-height: 44px !important;
+    -moz-window-dragging: drag !important;
+  }
+  #nav-bar :is(toolbarbutton, toolbaritem, #urlbar-container) {
+    -moz-window-dragging: no-drag;
+  }
+  #nav-bar toolbarspring {
+    -moz-window-dragging: drag !important;
+  }
+
+  #TabsToolbar {
+    -moz-window-dragging: no-drag !important;
+    padding-bottom: var(--cosmic-space-xxs) !important;
+  }
+
+  /* Back/forward are hidden: Firefox marks them non-removable, so they can't
+     go to the tab bar. Alt+Left/Right and mouse back/forward still work. */
+  #nav-bar :is(#back-button, #forward-button) {
+    display: none !important;
+  }
+}
+
+/* Menu buttons like a native COSMIC menu bar (e.g. Files): Inter 14px,
+   regular weight, accent-colored labels, ~16px between items. */
+#main-menubar > menu {
+  appearance: none !important;
+  margin: 0 !important;
+  padding: 4px 8px !important;
+  border-radius: var(--cosmic-radius-s) !important;
+  background: transparent !important;
+  color: var(--cosmic-accent-text) !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+#main-menubar > menu:is(:hover, [_moz-menuactive]) {
+  background: var(--cosmic-btn-hover) !important;
+}
+#main-menubar > menu[open] {
+  background: var(--cosmic-btn) !important;
+}
+#main-menubar > menu > .menu-text {
+  margin: 0 !important;
+}
+/* No underlined access keys, like COSMIC; they show again when the menu bar
+   is opened with the keyboard (Alt / F10). */
+#main-menubar:not([openedwithkey="true"]) > menu .accesskey {
+  text-decoration: none !important;
+}
+/* Menu labels draw the underline natively via -moz-label-content. */
+#main-menubar:not([openedwithkey="true"]) > menu > .menu-text[value]::before {
+  content: attr(value) !important;
+}
+
+/* ---------- Tabs: vertical (COSMIC nav sidebar, like Settings) ---------- */
+#sidebar-main,
+#sidebar-main > sidebar-main,
+#vertical-tabs,
+#tabbrowser-tabs[orient="vertical"],
+#tabbrowser-tabs[orient="vertical"] #tabbrowser-arrowscrollbox {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+#tabbrowser-tabs[orient="vertical"] .tabbrowser-tab {
+  padding-block: 1px !important;
+  min-height: 0 !important;
+}
+#tabbrowser-tabs[orient="vertical"] .tab-content {
+  min-height: 36px !important;
+  padding-inline: var(--cosmic-space-xs) !important;
+}
+/* Selected item: accent label and icon, plus COSMIC's active-hint bar */
+#tabbrowser-tabs[orient="vertical"] .tabbrowser-tab[selected] .tab-label {
+  color: var(--cosmic-accent-text) !important;
+}
+#tabbrowser-tabs[orient="vertical"] .tabbrowser-tab[selected]:not([pinned]) .tab-background {
+  box-shadow: inset var(--cosmic-active-hint) 0 0 var(--cosmic-accent) !important;
+}
+#tabbrowser-tabs[orient="vertical"] #vertical-pinned-tabs-container {
+  border-bottom: 1px solid var(--cosmic-divider) !important;
+  padding-bottom: var(--cosmic-space-xxs) !important;
+}
+#tabbrowser-tabs[orient="vertical"] #tabs-newtab-button > .toolbarbutton-icon,
+#tabbrowser-tabs[orient="vertical"] #vertical-tabs-newtab-button {
+  border-radius: var(--cosmic-radius-s) !important;
+}
+
+/* Web content as a rounded COSMIC container next to the sidebar */
+:root {
+  --cosmic-content-gap: var(--cosmic-space-xxs);
+}
+#sidebar-main:not([hidden]) ~ #tabbrowser-tabbox,
+#tabbrowser-tabbox[sidebar-shown] {
+  margin: 0 var(--cosmic-content-gap) var(--cosmic-content-gap) 0 !important;
+  border-radius: var(--cosmic-radius-m) !important;
+  overflow: clip !important;
+  box-shadow: none !important;
+  outline: 1px solid var(--cosmic-bg-divider) !important;
+}
+
+/* Sidebar panels (bookmarks, history, extensions) */
+#sidebar-box {
+  background: transparent !important;
+  border: none !important;
+}
+#sidebar-box #sidebar {
+  border-radius: var(--cosmic-radius-m) !important;
+}
+#sidebar-splitter {
+  border: none !important;
+  background: transparent !important;
+  width: var(--cosmic-content-gap) !important;
+}
+
+/* ---------- Menus and panels ---------- */
+menupopup,
+panel {
+  --panel-padding: var(--cosmic-space-xxs) !important;
+}
+menupopup > menuitem,
+menupopup > menu {
+  border-radius: var(--cosmic-radius-s) !important;
+  padding-block: 6px !important;
+}
+menupopup > menuitem[_moz-menuactive],
+menupopup > menu[_moz-menuactive] {
+  background-color: var(--menuitem-hover-background-color) !important;
+}
+.subviewbutton,
+.panel-subview-body > toolbarbutton {
+  border-radius: var(--cosmic-radius-s) !important;
+}
+
+/* ---------- Find bar, bookmarks bar ---------- */
+findbar {
+  background: var(--cosmic-bg) !important;
+  border-top: 1px solid var(--cosmic-bg-divider) !important;
+}
+#PersonalToolbar toolbarbutton.bookmark-item {
+  border-radius: var(--cosmic-radius-s) !important;
+}
+
+/* ---------- Transparent web pages (Frosted Pages extension) ---------- */
+.browserContainer,
+#tabbrowser-tabpanels,
+#tabbrowser-tabpanels browser {
+  background: transparent !important;
+}
+
+/* ---------- Window controls: plain icons like native COSMIC apps ---------- */
+/* Firefox treats the GTK theme as Adwaita and gives every button a circle. */
+.titlebar-button {
+  color: var(--cosmic-icon) !important;
+}
+.titlebar-button > .toolbarbutton-icon {
+  background-color: transparent !important;
+}
+.titlebar-button:hover > .toolbarbutton-icon {
+  background-color: var(--cosmic-btn-hover) !important;
+}
+.titlebar-button:hover:active > .toolbarbutton-icon {
+  background-color: var(--cosmic-btn-pressed) !important;
+}
+
+/* ---------- Maximized / fullscreen: no frosted glass ---------- */
+/* The Frosted Pages extension also keeps pages solid in these windows. */
+:root:is([sizemode="maximized"], [sizemode="fullscreen"], [inFullscreen]) {
+  --cosmic-bg: var(--cosmic-bg-solid) !important;
+}

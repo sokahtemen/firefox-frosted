@@ -9,6 +9,10 @@ patch, so the COSMIC compositor blurs what is behind translucent Firefox windows
   Firefox source tarball next to it; a full build takes ~1 hour and a lot of RAM/swap.
 - `frosted-pages/` - companion extension that makes page backgrounds translucent per site
   (needs `browser.tabs.allow_transparent_browser=true`).
+- `chrome/userChrome.css` - COSMIC-styled browser UI (translucent tokens, two-row header with
+  menu + nav bar). Symlink it into the profile:
+  `ln -s "$PWD/chrome/userChrome.css" ~/.config/mozilla/firefox/<profile>/chrome/userChrome.css`
+  and set `toolkit.legacyUserProfileCustomizations.stylesheets=true`.
 
 ## AI-generated
 

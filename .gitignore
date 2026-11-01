@@ -13,3 +13,5 @@ build-run.out
 *.rel2
 *.bak-*/
 frosted-pages.bak-*/
+# temp files from cosmic-firefox-sync
+.userChrome.*
