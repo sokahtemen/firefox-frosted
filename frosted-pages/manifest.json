@@ -1,0 +1,41 @@
+{
+  "manifest_version": 2,
+  "name": "Frosted Pages",
+  "version": "1.12",
+  "description": "Make web pages translucent per site, so the COSMIC frosted blur shows through.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "frosted-pages@nemeth.local",
+      "strict_min_version": "128.0"
+    }
+  },
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "browser_action": {
+    "default_title": "Frosted Pages",
+    "default_popup": "popup.html",
+    "default_icon": "icons/frost.svg"
+  },
+  "icons": {
+    "48": "icons/frost.svg",
+    "96": "icons/frost.svg"
+  }
+}

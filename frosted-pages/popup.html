@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="host" id="host">—</div>
+  <label class="row toggle">
+    <span>Frosted on this site</span>
+    <input type="checkbox" id="enabled">
+  </label>
+  <div class="row slider">
+    <label for="opacity">Page opacity</label>
+    <output id="value">50%</output>
+  </div>
+  <input type="range" id="opacity" min="0" max="100" step="5" value="50">
+  <div class="row slider">
+    <label for="panelOpacity">Panel opacity</label>
+    <output id="panelValue">100%</output>
+  </div>
+  <input type="range" id="panelOpacity" min="0" max="100" step="5" value="100">
+  <p class="note" id="note"></p>
+  <script src="popup.js"></script>
+</body>
+</html>

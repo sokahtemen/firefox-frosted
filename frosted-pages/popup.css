@@ -1,0 +1,10 @@
+:root { color-scheme: light dark; font: menu; font-size: 13px; }
+body { margin: 0; padding: 12px 14px; width: 240px; }
+.host { font-weight: 600; margin-bottom: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.toggle { margin-bottom: 12px; cursor: pointer; }
+.slider { margin-bottom: 4px; }
+input[type=range] { width: 100%; margin: 0; }
+input:disabled + *, input[type=range]:disabled { opacity: .5; }
+.note { margin: 8px 0 0; opacity: .7; font-size: 12px; }
+.note:empty { display: none; }

@@ -1,0 +1,15 @@
+# upstream source, build trees and outputs
+*.tar.xz
+*.tar.xz.asc
+*.pkg.tar.zst
+*.xpi
+src/
+pkg/src/
+pkg/pkg/
+arch-pkg/
+*.log
+build-run.out
+# old backups
+*.rel2
+*.bak-*/
+frosted-pages.bak-*/
