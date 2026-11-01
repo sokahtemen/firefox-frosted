@@ -1,13 +1,10 @@
 "use strict";
-const DEFAULT_OPACITY = 50;
-const DEFAULT_PANEL_OPACITY = 100;
-const DEFAULTS = { enabled: true, opacity: DEFAULT_OPACITY, panelOpacity: DEFAULT_PANEL_OPACITY };
 const $ = id => document.getElementById(id);
 let host = "";
 
 async function save(patch) {
   const { sites = {} } = await browser.storage.local.get("sites");
-  const site = Object.assign({}, DEFAULTS, sites[host], patch);
+  const site = { ...DEFAULT_SITE, ...sites[host], ...patch };
   sites[host] = site;
   await browser.storage.local.set({ sites });
 }
@@ -33,7 +30,7 @@ function show(site) {
   }
   $("host").textContent = host;
   const { sites = {} } = await browser.storage.local.get("sites");
-  show(Object.assign({}, DEFAULTS, sites[host]));
+  show({ ...DEFAULT_SITE, ...sites[host] });
 
   $("enabled").addEventListener("change", e => {
     const next = { enabled: e.target.checked, opacity: +$("opacity").value, panelOpacity: +$("panelOpacity").value };

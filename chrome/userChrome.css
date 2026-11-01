@@ -2,15 +2,18 @@
  *
  * Colors, radii and frosted alphas are taken from the COSMIC theme in
  * ~/.config/cosmic/com.system76.CosmicTheme.{Dark,Light}/v2. Follows the
- * system light/dark mode. If you change your COSMIC accent or roundness,
- * update the --cosmic-* tokens below.
+ * system light/dark mode.
  *
- * Needs (set by user.js next to this folder):
+ * cosmic-firefox-sync (desktop-scripts) keeps the frosted alphas (--cosmic-bg,
+ * -bg-divider, -component, -component-hover) in sync with COSMIC's Glass
+ * opacity. It finds the dark and light token blocks by the "COSMIC tokens:
+ * light" and "Map onto" section comments, so keep those. The other tokens
+ * (accent, roundness ...) are copies: update them if you change those in COSMIC.
+ *
+ * Needs (about:config or user.js):
  *   toolkit.legacyUserProfileCustomizations.stylesheets = true
  *   widget.transparent-windows                         = true
  *   widget.wayland.background-blur.enabled             = true
- *
- * Previous version: userChrome.css.bak-20261026
  */
 
 /* ---------- COSMIC tokens: dark ---------- */
@@ -88,7 +91,6 @@
   --toolbarbutton-background-color-hover:  var(--cosmic-btn-hover) !important;
   --toolbarbutton-background-color-active: var(--cosmic-btn-pressed) !important;
   --toolbarbutton-icon-fill:               var(--cosmic-icon) !important;
-
 
   --focus-outline-color:                   var(--cosmic-accent) !important;
   --color-accent-primary:                  var(--cosmic-accent) !important;
@@ -210,8 +212,12 @@ body:-moz-window-inactive {
 #browser {
   background: var(--cosmic-bg) !important;
 }
+/* Everything between it and the page is see-through; the Frosted Pages
+   extension makes the page itself translucent. */
+#appcontent,
 #tabbrowser-tabpanels,
-#appcontent {
+#tabbrowser-tabpanels browser,
+.browserContainer {
   background: transparent !important;
 }
 
@@ -502,13 +508,6 @@ findbar {
 }
 #PersonalToolbar toolbarbutton.bookmark-item {
   border-radius: var(--cosmic-radius-s) !important;
-}
-
-/* ---------- Transparent web pages (Frosted Pages extension) ---------- */
-.browserContainer,
-#tabbrowser-tabpanels,
-#tabbrowser-tabpanels browser {
-  background: transparent !important;
 }
 
 /* ---------- Window controls: plain icons like native COSMIC apps ---------- */

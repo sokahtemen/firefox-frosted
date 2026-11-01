@@ -44,7 +44,7 @@ gpg --import "$PKG"/keys/pgp/*.asc 2>&1 | grep -v '^gpg: key .*not changed$' || 
 cd "$PKG"
 rm -rf src pkg
 
-log "Building - this takes about 1.5-3 hours. Full log: $LOG"
+log "Building - this takes about an hour. Full log: $LOG"
 log "makepkg will ask for your password to install missing build dependencies."
 start=$(date +%s)
 # -s installs makedepends, -f overwrites an old package file, -c cleans the build tree on success.
@@ -77,6 +77,6 @@ Then in about:config:
     widget.wayland.background-blur.enabled              = true   (default)
     widget.wayland.background-blur.popups               = false  (true = blur menus too, corners may show)
 
-and lower the alpha of --glass-bg in your userChrome.css (e.g. 0.55) to see the blur.
+and use a userChrome.css with translucent colors, e.g. chrome/userChrome.css (see README.md).
 In COSMIC: Settings > Desktop > Appearance > Style > Frosted glass must be on.
 EOF
