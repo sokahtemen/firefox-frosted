@@ -387,6 +387,27 @@ toolbar .toolbarbutton-1 > .toolbarbutton-text {
   #nav-bar :is(#back-button, #forward-button) {
     display: none !important;
   }
+
+  /* Narrow windows (e.g. half of the screen): the menu (~455px) leaves the
+     URL bar less than its minimum width, and the nav-bar buttons and window
+     controls end up drawn over it. Give the menu a row of its own, with the
+     window controls at its end, and the nav-bar the whole second row. */
+  @media (max-width: 1000px) {
+    #toolbar-menubar { grid-area: 1 / 1 / 2 / -1; min-height: 36px !important; }
+    #nav-bar         { grid-area: 2 / 1 / 3 / -1; }
+    #TabsToolbar     { grid-area: 3 / 1 / 4 / -1; }
+    #PersonalToolbar { grid-area: 4 / 1 / 5 / -1; }
+    #notifications-toolbar { grid-area: 5 / 1 / 6 / -1; }
+
+    #nav-bar > .titlebar-buttonbox-container {
+      display: none !important;
+    }
+    #toolbar-menubar > .titlebar-buttonbox-container {
+      display: flex !important;
+      visibility: visible !important;
+      margin-inline-start: auto !important;
+    }
+  }
 }
 
 /* Menu buttons like a native COSMIC menu bar (e.g. Files): Inter 14px,
