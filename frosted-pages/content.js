@@ -120,20 +120,6 @@ function tintedAncestor(el) {
   return null;
 }
 
-// Popups, dropdowns and dialogs float above the page (absolute or fixed, with
-// a shadow or a raised z-index); see-through they would be unreadable over
-// the content behind, so they keep their own opacity.
-function isFloating(el) {
-  for (let p = el; p && p !== document.body; p = p.parentElement) {
-    const cs = getComputedStyle(p);
-    if (cs.position !== "absolute" && cs.position !== "fixed") continue;
-    const r = p.getBoundingClientRect();
-    if (r.width >= vw * 0.9 && r.height >= vh * 0.9) continue;
-    if (cs.boxShadow !== "none" || parseInt(cs.zIndex) > 0) return true;
-  }
-  return false;
-}
-
 function sitsOnSameColor(el, color) {
   const below = tintedAncestor(el);
   return !!below && sameColor(tinted.get(below).color, color);
@@ -149,7 +135,6 @@ function tint(el, color, { panel = false, stripe = false } = {}) {
       color,
       panel,
       stripe,
-      floating: isFloating(el),
       // A surface with the same color as the one it sits on would stack the
       // tint and look more opaque, so it becomes fully transparent instead.
       clear: stripe || sitsOnSameColor(el, color),
@@ -159,8 +144,8 @@ function tint(el, color, { panel = false, stripe = false } = {}) {
 }
 
 function paint(el) {
-  const { color: c, clear, panel, floating } = tinted.get(el);
-  const a = clear ? 0 : floating ? c.a : Math.round(c.a * (panel ? site.panelOpacity : site.opacity)) / 100;
+  const { color: c, clear, panel } = tinted.get(el);
+  const a = clear ? 0 : Math.round(c.a * (panel ? site.panelOpacity : site.opacity)) / 100;
   el.style.setProperty("background-color", `rgba(${c.r}, ${c.g}, ${c.b}, ${a})`, "important");
 }
 
@@ -285,21 +270,68 @@ function markCleared(el) {
   el.setAttribute(CLEARED_ATTR, "");
 }
 
-// Sticky headers, fixed bars and overlays have the page scrolling underneath
-// them, so a translucent one would show sharp content through it. They and
-// everything inside them keep their own background.
-// A fixed layer covering the whole window is a backdrop (Gmail's theme layer),
-// not a bar, so it is frosted like the page.
-function isPinned(el) {
+// Only what the page is drawn on gets frosted. Anything layered over other
+// content keeps its own background, with everything inside it: a see-through
+// dialog, menu or dimming backdrop would show the page below through it.
+// Sticky headers and fixed bars count as layered, since the page scrolls
+// under them. A layer with nothing under it (a web app's root, Gmail's theme
+// backdrop) is part of the page.
+function isOverlay(el) {
   for (let p = el; p && p !== document.body; p = p.parentElement) {
-    const pos = getComputedStyle(p).position;
-    if (pos === "sticky") return true;
-    if (pos === "fixed") {
-      const r = p.getBoundingClientRect();
-      if (r.width < vw * 0.9 || r.height < vh * 0.9) return true;
-    }
+    const cs = getComputedStyle(p);
+    if (cs.position === "sticky") return true;
+    if (cs.position === "fixed" && !coversWindow(p)) return true;
+    // Layers: out of the flow, or raised with a z-index (Instagram's dialogs).
+    const layered = cs.position === "fixed" || cs.position === "absolute" ||
+      (cs.position === "relative" && cs.zIndex !== "auto");
+    if (layered && coversContent(p)) return true;
   }
   return false;
+}
+
+function coversWindow(el) {
+  const r = el.getBoundingClientRect();
+  return r.width >= vw * 0.9 && r.height >= vh * 0.9;
+}
+
+// Is anything holding text or media under the layer? Checked at five
+// points, once per scan (the cache is cleared when a scan starts).
+const coverCache = new Map();
+const SAMPLE_POINTS = [[0.5, 0.5], [0.25, 0.25], [0.75, 0.25], [0.25, 0.75], [0.75, 0.75]];
+const MEDIA = "img, picture, video, canvas, svg, iframe, embed, object";
+
+function hasContent(el) {
+  if (el.matches(MEDIA) || el.querySelector(MEDIA)) return true;
+  const text = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  for (let n = text.nextNode(); n; n = text.nextNode()) {
+    if (n.data.trim() && !n.parentElement.closest("script, style, noscript, template")) return true;
+  }
+  return false;
+}
+
+function coversContent(layer) {
+  if (coverCache.has(layer)) return coverCache.get(layer);
+  const r = layer.getBoundingClientRect();
+  const left = Math.max(r.left, 0), top = Math.max(r.top, 0);
+  const w = Math.min(r.right, vw) - left, h = Math.min(r.bottom, vh) - top;
+  let covers = false;
+  for (const [fx, fy] of w > 0 && h > 0 ? SAMPLE_POINTS : []) {
+    // Top to bottom: what is drawn on the layer, the layer, then what is under it.
+    const stack = document.elementsFromPoint(left + w * fx, top + h * fy);
+    const last = stack.findLastIndex(e => layer.contains(e));
+    if (last < 0) continue;
+    // A wrapper listed under the layer can still have its content painted
+    // over it (Gmail: the static app wrapper sits under the fixed theme
+    // layer, the app inside it is drawn on top), so it doesn't count.
+    const above = stack.slice(0, last).filter(e => !layer.contains(e));
+    const below = stack.slice(last + 1);
+    if (below.some(e => !e.contains(layer) && !above.some(a => e.contains(a)) && hasContent(e))) {
+      covers = true;
+      break;
+    }
+  }
+  coverCache.set(layer, covers);
+  return covers;
 }
 
 function scan() {
@@ -308,6 +340,7 @@ function scan() {
   const panels = panelsOn();
   vw = innerWidth;
   vh = innerHeight;
+  coverCache.clear();
   withoutObserver(() => {
     // The root always gets a tint, so the page reads as one surface.
     if (!tinted.has(root)) {
@@ -324,11 +357,12 @@ function scan() {
     const bodyCovers = !!bodyColor && bodyColor.a >= 0.5 && !sameColor(bodyColor, rootEntry.color) &&
       document.body.clientWidth >= vw * 0.9 && document.body.clientHeight >= vh * 0.9;
     if (rootEntry.clear !== bodyCovers) { rootEntry.clear = bodyCovers; paint(root); }
-    // Headers that became sticky after scrolling get their background back.
+    // Headers that became sticky after scrolling, and layers that now cover
+    // content (a popup opened over the page), get their background back.
     // Elements the page removed are forgotten: web apps that stay open for
     // days replace their DOM all the time, and holding on would leak it.
     for (const el of [...tinted.keys()]) {
-      if (el !== root && (!el.isConnected || isPinned(el))) untint(el);
+      if (el !== root && (!el.isConnected || isOverlay(el))) untint(el);
     }
     for (const map of [restyled, layerImages, holes]) {
       for (const el of map.keys()) if (!el.isConnected) map.delete(el);
@@ -354,11 +388,11 @@ function scan() {
         }
       } else if (page || (panels && isPanel(el))) {
         const color = parseColor(getComputedStyle(el).backgroundColor);
-        if (color && color.a >= 0.5 && !isPinned(el)) {
+        if (color && color.a >= 0.5 && !isOverlay(el)) {
           // Inside an inverted surface colors are already flipped.
           if (!fitsScheme(color) && !insideInverted(el)) invert(el);
           tint(el, color, { panel: !page });
-        } else if (color && color.a > 0 && panels && !fitsScheme(color) && !insideInverted(el) && !isPinned(el)) {
+        } else if (color && color.a > 0 && panels && !fitsScheme(color) && !insideInverted(el) && !isOverlay(el)) {
           // A faint light overlay on a whole column (Gmail's app rail) is a
           // grey bar on dark glass: clear it.
           tint(el, color, { panel: true, stripe: true });
@@ -371,7 +405,7 @@ function scan() {
         // it; they would stack up and darken it, so they are cleared.
         const below = tintedAncestor(el);
         const color = below && parseColor(getComputedStyle(el).backgroundColor);
-        if (color && color.a >= 0.5 && !isPinned(el)) {
+        if (color && color.a >= 0.5 && !isOverlay(el)) {
           const surface = tinted.get(below).color;
           const stripe = !sameColor(color, surface) && fitsScheme(color) &&
             el.getBoundingClientRect().width >= below.getBoundingClientRect().width * 0.9;

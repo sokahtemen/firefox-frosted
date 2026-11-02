@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Frosted Pages",
-  "version": "1.13",
+  "version": "1.15",
   "description": "Make web pages translucent per site, so the COSMIC frosted blur shows through.",
   "browser_specific_settings": {
     "gecko": {
